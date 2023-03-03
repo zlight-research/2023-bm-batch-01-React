@@ -30,7 +30,13 @@ export default function OrderManage(){
         },
         {
             Header : 'Name',
-            accessor : 'name'
+            accessor : 'name',
+            Cell : (props) => (
+                <div className="d-flex align-items-center">
+                    <img className="ms-2 rounded" style={{width:"2rem"}} src="https://via.placeholder.com/600/771796" />
+                    <div className="ms-2">{props.row.original.name}</div>
+                </div>
+            )
         },
         {
             Header : 'Email ID',
@@ -42,11 +48,15 @@ export default function OrderManage(){
         },
         {
             Header : 'Street',
-            accessor : 'address.street'
+            accessor : 'address.street',
+            Cell : (props)=>(
+                <div className="bg-success rounded text-white">{props.row.original.address.street}</div>
+            )
         },
         {
             Header : 'City',
-            accessor : 'address.city'
+            accessor : 'address.city',
+            id :'city'
         }
     ]
 
@@ -64,7 +74,8 @@ export default function OrderManage(){
         getTableBodyProps,getTableProps,headerGroups,prepareRow,rows,
         page,nextPage,previousPage,canNextPage,canPreviousPage,pageCount,pageOptions,gotoPage,setPageSize,
         state:{pageIndex,pageSize,globalFilter},
-        setGlobalFilter,setAllFilters
+        setGlobalFilter,setAllFilters,
+        allColumns,getToggleHideAllColumnsProps
     } = useTable(
         {
             columns,data,defaultColumn,
@@ -83,15 +94,41 @@ export default function OrderManage(){
 
     return(
         <>
-        <div className="w-100 h-100 p-2">
-            <input ref={searchRef} type='text' value={globalFilter || ''} placeholder="search here" className="my-2" onChange={()=>{setGlobalFilter(searchRef.current.value)}}/>
+        <div className="w-100 h-100 p-2 overflow-auto">
+            <div className="d-flex align-items-center w-100">
+                <input ref={searchRef} type='text' value={globalFilter || ''} placeholder="search here" className="my-2" onChange={()=>{setGlobalFilter(searchRef.current.value)}}/>
+                <div class="dropdown ms-2" >
+                    <button style={{fontSize:"13px"}} class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Hide / Show Columns
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <div className="d-flex" style={{fontSize:"13px"}}>
+                                <input className="ms-2" type='checkbox' {...getToggleHideAllColumnsProps()}/>
+                                <div className="ms-2">Toggle All</div>
+                            </div>
+                        </li>
+                        {
+                            allColumns.map((column)=>(
+                                <li>
+                                    <div className="d-flex" style={{fontSize:"13px"}}>
+                                        <input className="ms-2" type='checkbox' {...column.getToggleHiddenProps()}/>
+                                        <div className="ms-2">{column.Header}</div>
+                                    </div>
+                                </li>
+                            ))
+                        }
+                    </ul>
+                </div>
+            </div>
             <table className="bg-white w-100" {...getTableProps()} style={{fontSize:"13px"}}>
                 <thead className="bg-info bg-gradient">
                     {headerGroups.map((headerGroup)=>(
                         <tr {...headerGroup.getHeaderGroupProps()}>
                             {headerGroup.headers.map((column)=>{
+                                if(column.id === 'id')
                                 return (
-                                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                                <th className="position-sticky start-0 bg-info bg-gradient" {...column.getHeaderProps(column.getSortByToggleProps())}>
                                     {column.render('Header')}
                                     <span className="ms-2 ">
                                         {column.isSorted ? ( column.isSortedDesc ? <i class="fa-solid fa-arrow-down-wide-short text-primary"></i> : <i class="fa-solid fa-arrow-up-wide-short text-primary"></i>) : ''}
@@ -99,6 +136,26 @@ export default function OrderManage(){
                                     <div>{column.canFilter ? column.render('Filter') : null}</div>
                                 </th>
                                 )
+                                else if(column.id === 'city')
+                                return (
+                                <th className="position-sticky end-0 bg-info bg-gradient" {...column.getHeaderProps(column.getSortByToggleProps())}>
+                                    {column.render('Header')}
+                                    <span className="ms-2 ">
+                                        {column.isSorted ? ( column.isSortedDesc ? <i class="fa-solid fa-arrow-down-wide-short text-primary"></i> : <i class="fa-solid fa-arrow-up-wide-short text-primary"></i>) : ''}
+                                    </span>
+                                    <div>{column.canFilter ? column.render('Filter') : null}</div>
+                                </th>
+                                )
+                                else
+                                return (
+                                    <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                                        {column.render('Header')}
+                                        <span className="ms-2 ">
+                                            {column.isSorted ? ( column.isSortedDesc ? <i class="fa-solid fa-arrow-down-wide-short text-primary"></i> : <i class="fa-solid fa-arrow-up-wide-short text-primary"></i>) : ''}
+                                        </span>
+                                        <div>{column.canFilter ? column.render('Filter') : null}</div>
+                                    </th>
+                                    )
                             })}
                         </tr>
                     ))}
@@ -109,9 +166,19 @@ export default function OrderManage(){
                         return(
                             <tr className="border-bottom" {...row.getRowProps()}>
                                 {row.cells.map((cell)=>{
+                                    if(cell.column.id === 'id'){
                                     return (
-                                        <td className="p-2">{cell.render('Cell')}</td>
-                                    )
+                                        <td className="p-2 position-sticky start-0 bg-white border-end">{cell.render('Cell')}</td>
+                                    )}
+                                    else if(cell.column.id === 'city'){
+                                        return (
+                                            <td className="p-2 position-sticky end-0 bg-white border-end">{cell.render('Cell')}</td>
+                                    )}
+                                    else{
+                                        return (
+                                            <td className="p-2">{cell.render('Cell')}</td>
+                                        )  
+                                    }
                                 })}
                             </tr>
                         )
