@@ -1,6 +1,10 @@
 import React, { useRef } from "react";
+import { useDispatch } from "react-redux";
+import { setDashboard } from "../redux/slices/sidebarSlice";
 
 function Sidebar(){
+
+    const dispatch = useDispatch()
 
     const sidebarRef = useRef(null)
 
@@ -39,8 +43,8 @@ function Sidebar(){
                 <div className="d-flex flex-column h-100 w-100">
 
                     <div className="d-flex align-items-center fw-bold" style={{height:"80px"}}>Product</div>
-                    <div className="mt-2 fw-bold text-start text-secondary"  style={{height:"40px",fontSize:"14px"}}>Dashboard</div>
-                    <div className="mt-2 fw-bold text-start text-secondary"  style={{height:"40px",fontSize:"14px"}}>Orders</div>
+                    <div onClick={()=>{dispatch(setDashboard(true))}} className="mt-2 fw-bold text-start text-secondary"  style={{height:"40px",fontSize:"14px"}}>Dashboard</div>
+                    <div onClick={()=>{dispatch(setDashboard(false))}} className="mt-2 fw-bold text-start text-secondary"  style={{height:"40px",fontSize:"14px"}}>Orders</div>
                     <div className="mt-2 fw-bold text-start text-secondary text-nowrap"  style={{height:"40px",fontSize:"14px"}}>Manage Users</div>
 
                 </div>

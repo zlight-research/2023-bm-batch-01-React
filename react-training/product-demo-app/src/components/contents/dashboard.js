@@ -1,4 +1,25 @@
+import {PieChart,Pie,Cell} from 'recharts'
+
 export default function Dashboard(){
+
+    const innerdata = [
+        {name:'c1',value:100},
+        {name:'c2',value:50},
+        {name:'c3',value:200},
+        {name:'c4',value:130}
+    ]
+
+    const outerdata = [
+        {name:'p1',value:10},
+        {name:'p2',value:50},
+        {name:'p3',value:200},
+        {name:'p4',value:130},
+        {name:'p5',value:130}
+    ]
+
+    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+
+
     return (
         <div className="d-flex flex-column w-100 h-100 p-2 bg-light">
             <div className="d-flex w-100">
@@ -98,7 +119,16 @@ export default function Dashboard(){
                                         </div></div>
                                     </div>
                                 </div>
-                          
+                                <div className='row mt-1'>
+                                    <PieChart width={400} height={400}>
+                                        <Pie data={innerdata} dataKey="value" outerRadius={100} >
+                                            {innerdata.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                            ))}
+                                        </Pie>
+                                        <Pie data={outerdata} dataKey="value" innerRadius={130} />
+                                    </PieChart>
+                                </div>
                             </div>
                         </div>
                     </div>
